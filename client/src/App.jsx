@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import AmazonReviewData from './components/AmazonReviewData/AmazonReviewData'
-import BasicTable from './components/templates/table/BasicTable'
+import DrawerAppBar from './components/templates/DrawerAppBar/DrawerAppBar'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <AmazonReviewData />
+      <DrawerAppBar/>
     </>
   )
 }

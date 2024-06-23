@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-async function fetch_test_csv() {
-  const serverUrl = 'http://localhost:5000/api/data';
+async function get_positive_filter() {
+  const serverUrl = 'http://localhost:5000/api/filter/positive';
   try {
     const response = await axios.get(serverUrl);
     return response.data; 
@@ -11,4 +11,4 @@ async function fetch_test_csv() {
   }
 }
 
-export default fetch_test_csv;
+export default get_positive_filter;
