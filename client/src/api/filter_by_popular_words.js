@@ -5,7 +5,7 @@ async function filter_by_popular_words(category) {
   try {
     const response = await axios.get(serverUrl);
     console.log(response.data);
-    return response.data;
+    return response.data.words;
   } catch (error) {
     console.error('Error processing data:', error);
     throw error;
