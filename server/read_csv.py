@@ -3,17 +3,24 @@ import pandas as pd
 from collections import Counter
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+import requests
+import time
 
 app = Flask(__name__)
 
-def read_csv_data():
+def read_csv_data(chunk_size, chunk_number, delay=1):
     try:
-        file_path = 'C:/Users/User/Documents/amazon_test/test.csv'
-        df = pd.read_csv(file_path, nrows=500)
-        return df
+        file_path = 'C:/Users/User/Documents/amazon_test/train.csv'
+        start_index = (chunk_number - 1) * chunk_size  
+        end_index = start_index + chunk_size 
+        chunk = pd.read_csv(file_path, skiprows=range(1, start_index), nrows=chunk_size)
+        # time.sleep(delay)  
+        return chunk
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return None
+        print(f"An error occurred while reading CSV file: {str(e)}")
+        return pd.DataFrame()
+
+   
 
 def filter_positive_sentiment(df):
     try:

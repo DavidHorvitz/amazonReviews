@@ -10,53 +10,78 @@ CORS(app)
 
 @app.route('/api/data', methods=['GET'])
 def get_data():
-    data = read_csv_data()
-    if data is not None:
-        return jsonify(data.to_json(orient='records'))
-    else:
-        return jsonify({'error': 'Failed to read data'}), 500
+    try:
+        chunk_size = request.args.get('chunk_size', default=2000, type=int)
+        chunk_number = request.args.get('chunk_number', default=1, type=int)
+
+        data = read_csv_data(chunk_size, chunk_number)
+        if not data.empty:
+            return jsonify(data.to_json(orient='records'))
+        else:
+            return jsonify({'error': 'Failed to read data or chunk number is out of range'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/filter/positive', methods=['GET'])
 def filter_positive_data():
-    df = read_csv_data()
-    if df is not None:
-        filtered_data = filter_positive_sentiment(df)
-        if filtered_data is not None:
-            return jsonify(filtered_data.to_json(orient='records'))
+    try:
+        chunk_size = request.args.get('chunk_size', default=2000, type=int)
+        chunk_number = request.args.get('chunk_number', default=1, type=int)
+
+        df = read_csv_data(chunk_size, chunk_number)
+        if df is not None:
+            filtered_data = filter_positive_sentiment(df)
+            if filtered_data is not None:
+                return jsonify(filtered_data.to_json(orient='records'))
+            else:
+                return jsonify({'error': 'Failed to filter positive data'}), 500
         else:
-            return jsonify({'error': 'Failed to filter positive data'}), 500
-    else:
-        return jsonify({'error': 'Failed to read data'}), 500
+            return jsonify({'error': 'Failed to read data'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/filter/negative', methods=['GET'])
 def filter_negative_data():
-    df = read_csv_data()
-    if df is not None:
-        filtered_data = filter_negative_sentiment(df)
-        if filtered_data is not None:
-            return jsonify(filtered_data.to_json(orient='records'))
+    try:
+        chunk_size = request.args.get('chunk_size', default=2000, type=int)
+        chunk_number = request.args.get('chunk_number', default=1, type=int)
+
+        df = read_csv_data(chunk_size, chunk_number)
+        if df is not None:
+            filtered_data = filter_negative_sentiment(df)
+            if filtered_data is not None:
+                return jsonify(filtered_data.to_json(orient='records'))
+            else:
+                return jsonify({'error': 'Failed to filter negative data'}), 500
         else:
-            return jsonify({'error': 'Failed to filter negative data'}), 500
-    else:
-        return jsonify({'error': 'Failed to read data'}), 500
+            return jsonify({'error': 'Failed to read data'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/process', methods=['GET'])
 def process_data():
-    category = request.args.get('category')  
-    df = read_csv_data()
-    if df is not None:
-        if category == 'positive':
-            result = process_reviews(df, 'positive')
-            print(result)  
-            return jsonify(result), 200
-        elif category == 'negative':
-            result = process_reviews(df, 'negative')
-            print(result)  
-            return jsonify(result), 200
+    try:
+        category = request.args.get('category')  
+        chunk_size = request.args.get('chunk_size', default=2000, type=int)
+        chunk_number = request.args.get('chunk_number', default=1, type=int)
+
+        df = read_csv_data(chunk_size, chunk_number)
+        if df is not None:
+            if category == 'positive':
+                result = process_reviews(df, 'positive')
+                print(result)  
+                return jsonify(result), 200
+            elif category == 'negative':
+                result = process_reviews(df, 'negative')
+                print(result)  
+                return jsonify(result), 200
+            else:
+                return jsonify({'error': 'Invalid category parameter'}), 400
         else:
-            return jsonify({'error': 'Invalid category parameter'}), 400
-    else:
-        return jsonify({'error': 'Failed to read data'}), 500
+            return jsonify({'error': 'Failed to read data'}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     
 
 @app.route('/api/find_similar_words', methods=['POST'])
